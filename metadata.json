@@ -1,0 +1,60 @@
+{
+  "name": "bdhoine-dispatcher",
+  "version": "0.1.0",
+  "author": "Barry d'Hoine-Bruyndonckx",
+  "summary": "Install and configure the Apache AEM Dispatcher module",
+  "license": "Apache-2.0",
+  "source": "https://github.com/bdhoine/bdhoine-dispatcher.git",
+  "project_page": "https://github.com/bdhoine/bdhoine-dispatcher",
+  "issues_url": "https://github.com/bdhoine/bdhoine-dispatcher/issues",
+  "dependencies": [
+
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "16.04"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.7.0 < 6.0.0"
+    }
+  ],
+  "pdk-version": "1.3.1",
+  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-templates.git",
+  "template-ref": "1.3.0-0-g632fa63"
+}
