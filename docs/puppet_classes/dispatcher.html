@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Puppet Class: dispatcher
+  
+    &mdash; Documentation by YARD 0.9.12
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "puppet_classes::dispatcher";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../puppet_class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (d)</a> &raquo;
+    <span class='title'><span class='object_link'>Puppet Classes</span></span>
+     &raquo; 
+    <span class="title">dispatcher</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="puppet_class_list_link"
+        href="../puppet_class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Puppet Class: dispatcher</h1>
+<div class="box_info">
+  
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>
+      manifests/init.pp
+    </dd>
+  </dl>
+</div>
+
+  <h2>Summary</h2>
+  Install the Apache AEM Dispatcher module and configure the module. If provided also the farms will be configured.
+
+<h2>Overview</h2>
+<div class="docstring">
+  <div class="discussion">
+    
+<p>dispatcher</p>
+
+<p>Installs and configures the AEM Dispatcher module</p>
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Minimal example</p>
+</div></p>
+      
+      <pre class="example code"><code>include apache
+
+class { &#39;dispatcher&#39;:
+  module_file =&gt; &#39;/path/to/dispatcher-apache.so&#39;
+}</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>ensure</span>
+      
+      
+        <span class='type'>(<tt>Enum['present', 'absent']</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Changes the state of the dispatcher configuration. Valid options: present
+or absent. Default: present.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>module_file</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Absolutepath</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Specifies which dispatcher module will be loaded. Valid options: any
+absolute path to file.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>config_file</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Name of the dispatcher farm any file. Default: dispatcher.farms.any.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>decline_root</span>
+      
+      
+        <span class='type'>(<tt>Variant[Enum['on', 'off'], Integer[0, 1]]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the DispatcherDelcineRoot value for the dispatcher configuration.
+Valid options: 0, 1, off or on. Default: off.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>dispatcher_name</span>
+      
+      
+        <span class='type'>(<tt>Optional[String]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the name of the dispatcher in the root dispatcher farm file. Valid
+options: any string.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>farm_path</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Apache configuration directory for the dispatcher. Default: Apache&#39;s
+configuration directory.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>group</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the group for file ownership. Valid options: any valid group. Default:
+Apache&#39;s root group.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>log_file</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Absolutepath</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the name and location of the dispatcher log file. Valid options: any
+fully qualified file name. Default: /dispatcher.log.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>log_level</span>
+      
+      
+        <span class='type'>(<tt>Variant[Enum['error', 'warn', 'info', 'debug', 'trace'], Integer[0,4]]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the log level for dispatcher logging. Valid options: 0, 1, 2, 3, 4,
+error, warn, info, debug, trace. Default: warn.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>mod_path</span>
+      
+      
+        <span class='type'>(<tt>Stdlib::Absolutepath</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Required. Specifies which dispatcher module will be loaded. Valid options:
+any absolute path to file.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>no_server_header</span>
+      
+      
+        <span class='type'>(<tt>Variant[Enum['on', 'off'], Integer[0, 1]]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the DispatcherNoServerHeader value for the dispatcher configuration.
+Valid options: 0, 1, off or on. Default: off.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>pass_error</span>
+      
+      
+        <span class='type'>(<tt>Variant[String, Integer]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the DispatcherPassError value for the dispatcher configuration. Valid
+options: any string. Default: 0.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>use_processed_url</span>
+      
+      
+        <span class='type'>(<tt>Variant[Enum['on', 'off'], Integer[0, 1]]</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the DispatcherUseProcessedURL value for the dispatcher configuration.
+Valid options: 0, 1, off or on. Default: off.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>user</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Sets the user for file ownership. Valid options: any valid user. Default:
+root.</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><div class="method_details_list">
+  <table class="source_code">
+    <tr>
+      <td>
+        <pre class="lines">
+
+
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149</pre>
+      </td>
+      <td>
+        <pre class="code"><span class="info file"># File 'manifests/init.pp', line 27</span>
+
+class dispatcher (
+  Enum[&#39;present&#39;, &#39;absent&#39;] $ensure,
+  Stdlib::Absolutepath $module_file,
+  String $config_file,
+  Variant[Enum[&#39;on&#39;, &#39;off&#39;], Integer[0, 1]] $decline_root,
+  Optional[String] $dispatcher_name,
+  String $farm_path,
+  String $group,
+  Stdlib::Absolutepath $log_file,
+  Variant[Enum[&#39;error&#39;, &#39;warn&#39;, &#39;info&#39;, &#39;debug&#39;, &#39;trace&#39;], Integer[0,4]] $log_level,
+  Stdlib::Absolutepath $mod_path,
+  Variant[Enum[&#39;on&#39;, &#39;off&#39;], Integer[0, 1]] $no_server_header,
+  Variant[String, Integer] $pass_error,
+  Variant[Enum[&#39;on&#39;, &#39;off&#39;], Integer[0, 1]] $use_processed_url,
+  String $user,
+) {
+
+  # Check for Apache because it is used by parameter defaults
+  if ! defined(Class[&#39;apache&#39;]) {
+    fail(&#39;You must include the apache base class before using any dispatcher class or defined resources&#39;)
+  }
+
+  $_mod_filename = basename($module_file)
+
+  # Manage actions
+  if ($ensure == &#39;present&#39;) {
+
+    apache::mod { &#39;dispatcher&#39; :
+      lib =&gt; &#39;mod_dispatcher.so&#39;,
+    }
+
+    file { &quot;${::dispatcher::mod_path}/${_mod_filename}&quot; :
+      ensure  =&gt; file,
+      group   =&gt; $group,
+      owner   =&gt; $user,
+      replace =&gt; true,
+      source  =&gt; $module_file,
+    }
+
+    file { &quot;${::dispatcher::mod_path}/mod_dispatcher.so&quot; :
+      ensure  =&gt; link,
+      group   =&gt; $group,
+      owner   =&gt; $user,
+      replace =&gt; true,
+      target  =&gt; &quot;${::dispatcher::mod_path}/${_mod_filename}&quot;,
+    }
+
+    file { &quot;${::dispatcher::farm_path}/dispatcher.conf&quot; :
+      ensure  =&gt; file,
+      group   =&gt; $group,
+      owner   =&gt; $user,
+      replace =&gt; true,
+      content =&gt; template(&quot;${module_name}/dispatcher.conf.erb&quot;)
+    }
+
+    file {  &quot;${::dispatcher::farm_path}/${config_file}&quot;:
+      ensure  =&gt; file,
+      group   =&gt; $group,
+      owner   =&gt; $user,
+      replace =&gt; true,
+      content =&gt; template(&quot;${module_name}/dispatcher.farms.erb&quot;)
+    }
+
+    if $facts[&#39;selinux&#39;] {
+
+      File[&quot;${::dispatcher::mod_path}/${_mod_filename}&quot;] {
+        seltype =&gt; &#39;httpd_modules_t&#39;,
+      }
+
+      File[&quot;${::dispatcher::mod_path}/mod_dispatcher.so&quot;] {
+        seltype =&gt; &#39;httpd_modules_t&#39;,
+      }
+
+      selboolean { &#39;httpd_can_network_connect&#39;:
+        value      =&gt; &#39;on&#39;,
+        persistent =&gt; true,
+      }
+
+    }
+
+    File[&quot;${::dispatcher::mod_path}/${_mod_filename}&quot;]
+    -&gt; File[&quot;${::dispatcher::mod_path}/mod_dispatcher.so&quot;]
+    -&gt; Apache::Mod[&#39;dispatcher&#39;]
+    -&gt; File[&quot;${::dispatcher::farm_path}/${config_file}&quot;]
+    -&gt; File[&quot;${::dispatcher::farm_path}/dispatcher.conf&quot;]
+
+  }
+  else {
+
+    file { &quot;${::dispatcher::mod_path}/${_mod_filename}&quot; :
+      ensure =&gt; $ensure,
+    }
+
+    file { &quot;${::dispatcher::mod_path}/mod_dispatcher.so&quot; :
+      ensure =&gt; $ensure,
+    }
+
+    file { &quot;${::dispatcher::farm_path}/dispatcher.conf&quot; :
+      ensure =&gt; $ensure,
+    }
+
+    file { &quot;${::dispatcher::farm_path}/${config_file}&quot; :
+      ensure =&gt; $ensure,
+    }
+
+    File[&quot;${::dispatcher::farm_path}/dispatcher.conf&quot;]
+    -&gt; File[&quot;${::dispatcher::farm_path}/${config_file}&quot;]
+    -&gt; File[&quot;${::dispatcher::mod_path}/${_mod_filename}&quot;]
+    -&gt; File[&quot;${::dispatcher::mod_path}/mod_dispatcher.so&quot;]
+
+  }
+
+  if defined(Service[$::apache::service_name]) {
+
+    File[&quot;${::dispatcher::farm_path}/${config_file}&quot;]
+    ~&gt; Service[$::apache::service_name]
+
+    File[&quot;${::dispatcher::farm_path}/dispatcher.conf&quot;]
+    ~&gt; Service[$::apache::service_name]
+
+  }
+
+}</pre>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+
+      <div id="footer">
+     Generated by <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>.
+</div>
+
+    </div>
+  </body>
+</html>

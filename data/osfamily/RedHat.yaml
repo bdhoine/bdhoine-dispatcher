@@ -1,0 +1,3 @@
+---
+dispatcher::mod_path: "%{::apache::httpd_dir}/%{::apache::lib_path}"
+dispatcher::farm_path: "%{::apache::mod_dir}"

@@ -1,0 +1,52 @@
+---
+dispatcher::config_file: dispatcher.farms.any
+dispatcher::decline_root: 'off'
+dispatcher::dispatcher_name: ~
+dispatcher::ensure: present
+dispatcher::group: "%{::apache::root_group}"
+dispatcher::log_file: "%{::apache::logroot}/dispatcher.log"
+dispatcher::log_level: 'warn'
+dispatcher::no_server_header: 'off'
+dispatcher::pass_error: 0
+dispatcher::use_processed_url: 'off'
+dispatcher::user: 'root'
+dispatcher::farm::allow_authorized: ~
+dispatcher::farm::allowed_clients:
+  - type: 'allow'
+    glob: '*'
+dispatcher::farm::cache_headers: ~
+dispatcher::farm::cache_rules:
+  - type: 'deny'
+    glob: '*'
+dispatcher::farm::cache_ttl: ~
+dispatcher::farm::client_headers:
+  - '*'
+dispatcher::farm::ensure: present
+dispatcher::farm::failover: ~
+dispatcher::farm::filters:
+  - type: 'allow'
+    glob: '*'
+dispatcher::farm::grace_period: ~
+dispatcher::farm::health_check_url: ~
+dispatcher::farm::ignore_parameters: ~
+dispatcher::farm::invalidate:
+  - type: 'allow'
+    glob: '*'
+dispatcher::farm::invalidate_handler: ~
+dispatcher::farm::priority: 0,
+dispatcher::farm::propagate_synd_post: ~
+dispatcher::farm::renders:
+  - hostname: 'localhost'
+    port: 4503
+dispatcher::farm::retries: ~
+dispatcher::farm::retry_delay: ~
+dispatcher::farm::serve_stale: ~
+dispatcher::farm::session_management: ~
+dispatcher::farm::stat_file: ~
+dispatcher::farm::stat_files_level: ~
+dispatcher::farm::statistics: ~
+dispatcher::farm::sticky_connections: ~
+dispatcher::farm::unavailable_penalty: ~
+dispatcher::farm::vanity_urls: ~
+dispatcher::farm::virtualhosts:
+  - '*'

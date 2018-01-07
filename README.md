@@ -1,15 +1,8 @@
-
 # dispatcher
 
-Welcome to your new module. A short overview of the generated parts can be found in the PDK documentation at https://puppet.com/pdk/latest/pdk_generating_modules.html .
+[![Build Status](https://travis-ci.org/bdhoine/bdhoine-dispatcher.svg?branch=master)](https://travis-ci.org/bdhoine/bdhoine-dispatcher)
 
-The README template below provides a starting point with details about what information to include in your README.
-
-
-
-
-
-
+Configure and install the Apache AEM dispatcher module and manage dispatcher farms.
 
 #### Table of Contents
 
@@ -31,7 +24,7 @@ You can give more descriptive information in a second paragraph. This paragraph 
 
 ## Setup
 
-### What dispatcher affects **OPTIONAL**
+### What dispatcher affects
 
 If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
 
@@ -41,7 +34,7 @@ If there's more that they should know about, though, this is the place to mentio
 * Dependencies that your module automatically installs.
 * Warnings or other important notices.
 
-### Setup Requirements **OPTIONAL**
+### Setup Requirements
 
 If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here.
 
@@ -57,16 +50,7 @@ This section is where you describe how to customize, configure, and do the fancy
 
 ## Reference
 
-Users need a complete list of your module's classes, types, defined types providers, facts, and functions, along with the parameters for each. You can provide this list either via Puppet Strings code comments or as a complete list in the README Reference section.
-
 * If you are using Puppet Strings code comments, this Reference section should include Strings information so that your users know how to access your documentation.
-
-* If you are not using Puppet Strings, include a list of all of your classes, defined types, and so on, along with their parameters. Each element in this listing should include:
-
-  * The data type, if applicable.
-  * A description of what the element does.
-  * Valid values, if the data type doesn't make it obvious.
-  * Default value, if any.
 
 ## Limitations
 
@@ -76,6 +60,6 @@ This is where you list OS compatibility, version compatibility, etc. If there ar
 
 Since your module is awesome, other users will want to play with it. Let them know what the ground rules for contributing are.
 
-## Release Notes/Contributors/Etc. **Optional**
+## Release Notes
 
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You can also add any additional sections you feel are necessary or important to include here. Please use the `## ` header.
+To read the release notes please consult the [CHANGELOG.md](CHANGELOG.md)
