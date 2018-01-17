@@ -10,11 +10,11 @@
 #   class { 'dispatcher':
 #     module_file => '/path/to/dispatcher-apache.so'
 #   }
-# @param ensure Changes the state of the dispatcher configuration. Valid options: present or absent. Default: present.
 # @param module_file Specifies which dispatcher module will be loaded. Valid options: any absolute path to file.
 # @param config_file Name of the dispatcher farm any file. Default: dispatcher.farms.any.
 # @param decline_root Sets the DispatcherDelcineRoot value for the dispatcher configuration. Valid options: 0, 1, off or on. Default: off.
 # @param dispatcher_name Sets the name of the dispatcher in the root dispatcher farm file. Valid options: any string.
+# @param ensure Changes the state of the dispatcher configuration. Valid options: present or absent. Default: present.
 # @param farm_path Apache configuration directory for the dispatcher. Default: Apache's configuration directory.
 # @param group Sets the group for file ownership. Valid options: any valid group. Default: Apache's root group.
 # @param log_file Sets the name and location of the dispatcher log file. Valid options: any fully qualified file name. Default: /dispatcher.log.

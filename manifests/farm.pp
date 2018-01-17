@@ -9,7 +9,6 @@
 #     docroot => '/var/www/html'
 #   }
 #
-# @param ensure Changes the state of the dispatcher farm configuration. Valid options: present or absent.
 # @param docroot Sets the cache /docroot rule.
 # @param allow_authorized Sets the cache /allowAuthorized rule.
 # @param allowed_clients Sets the cache /allowedClients section.
@@ -17,6 +16,7 @@
 # @param cache_rules Sets the cache /rules section.
 # @param cache_ttl Sets the cache /enableTTL rule.
 # @param client_headers  Sets the /clientheaders rule.
+# @param ensure Changes the state of the dispatcher farm configuration. Valid options: present or absent.
 # @param failover Sets the /failover rule.
 # @param filters Sets the /fiters section.
 # @param grace_period Sets the cache /grace rule.
