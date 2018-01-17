@@ -17,7 +17,7 @@ describe 'dispatcher::farm' do
 
       let(:default_params) do
         {
-          'docroot' => '/path/to/docroot'
+          'docroot' => '/path/to/docroot',
         }
       end
 
@@ -26,16 +26,12 @@ describe 'dispatcher::farm' do
 
       case os_facts[:os]['family']
       when 'RedHat'
-        log_path = '/var/log/httpd'
-        mod_path = '/etc/httpd/modules'
-        if os_facts[:os]['release']['major'].to_i >= 7
-          farm_path = '/etc/httpd/conf.modules.d'
-        else
-          farm_path = '/etc/httpd/conf.d'
-        end
+        farm_path = if os_facts[:os]['release']['major'].to_i >= 7
+                      '/etc/httpd/conf.modules.d'
+                    else
+                      '/etc/httpd/conf.d'
+                    end
       when 'Debian'
-        log_path = '/var/log/apache2'
-        mod_path = '/usr/lib/apache2/modules'
         farm_path = '/etc/apache2/mods-enabled'
       end
 
@@ -43,63 +39,63 @@ describe 'dispatcher::farm' do
         it { is_expected.to compile.with_all_deps }
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.00-#{title}.inc.any"
+            "#{farm_path}/dispatcher.00-#{title}.inc.any",
           ).with(
-            'ensure' => 'present'
+            'ensure' => 'present',
           ).with_content(
-            %r|/aem-site {|
+            %r|/aem-site {|,
           ).without_content(
-            /allowAuthorized/
+            %r{allowAuthorized},
           ).with_content(
-            %r|/allowedClients {\s*/0 { /type "allow" /glob "\*" }\s*}|
+            %r|/allowedClients {\s*/0 { /type "allow" /glob "\*" }\s*}|,
           ).with_content(
-            %r|/clientheaders {\s*"\*"\s*}|
+            %r|/clientheaders {\s*"\*"\s*}|,
           ).with_content(
-            %r|/docroot \s*"/path/to/docroot"\s*|
+            %r{/docroot \s*"/path/to/docroot"\s*},
           ).without_content(
-            /enableTTL/
+            %r{enableTTL},
           ).without_content(
-            /gracePeriod/
+            %r{gracePeriod},
           ).without_content(
-            %r|/headers|
+            %r{/headers},
           ).without_content(
-            /failover/
+            %r{failover},
           ).without_content(
-            /health_check/
+            %r{health_check},
           ).without_content(
-            /ignoreUrlParameters/
+            %r{ignoreUrlParameters},
           ).with_content(
-            %r|/invalidate {\s*/0 \{ /type "allow" /glob "\*" }|
+            %r|/invalidate {\s*/0 \{ /type "allow" /glob "\*" }|,
           ).without_content(
-            /invalidateHandler/
+            %r{invalidateHandler},
           ).with_content(
-            %r|/filter {\s*/0 { /type "allow" /glob "\*" }|
+            %r|/filter {\s*/0 { /type "allow" /glob "\*" }|,
           ).without_content(
-            /numberOfRetries/
+            %r{numberOfRetries},
           ).with_content(
-            %r|/renders {\s*/renderer0 {\s*/hostname "localhost"\s*/port "4503"\s*}|
+            %r|/renders {\s*/renderer0 {\s*/hostname "localhost"\s*/port "4503"\s*}|,
           ).without_content(
-            /retryDelay/
+            %r{retryDelay},
           ).with_content(
-            %r|/rules {\s*/0 { /type "deny" /glob "\*" }|
+            %r|/rules {\s*/0 { /type "deny" /glob "\*" }|,
           ).without_content(
-            /serveStaleOnError/
+            %r{serveStaleOnError},
           ).without_content(
-            /sessionmanagement/
+            %r{sessionmanagement},
           ).without_content(
-            /statfile/
+            %r{statfile},
           ).without_content(
-            /statfileslevel/
+            %r{statfileslevel},
           ).without_content(
-            /statistics/
+            %r{statistics},
           ).without_content(
-            /stickyConnections/
+            %r{stickyConnections},
           ).without_content(
-            /unavailablePenalty/
+            %r{unavailablePenalty},
           ).without_content(
-            /vanity_urls/
+            %r{vanity_urls},
           ).with_content(
-            %r|/virtualhosts {\s*"\*"\s*}|
+            %r|/virtualhosts {\s*"\*"\s*}|,
           )
         end
       end
@@ -110,14 +106,15 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(ensure: 'present')
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with(
-                'ensure' => 'present'
+                'ensure' => 'present',
               ).that_notifies(
-                'Service[httpd]'
+                'Service[httpd]',
               )
             end
           end
@@ -126,14 +123,15 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(ensure: 'absent')
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with(
-                'ensure' => 'absent'
+                'ensure' => 'absent',
               ).that_notifies(
-                'Service[httpd]'
+                'Service[httpd]',
               )
             end
           end
@@ -142,6 +140,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(ensure: 'invalid')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -151,6 +150,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allow_authorized: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -158,12 +158,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allow_authorized: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/allowAuthorized "1"|
+                %r{/allowAuthorized "1"},
               )
             end
           end
@@ -172,6 +173,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allow_authorized: 2)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -179,6 +181,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allow_authorized: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -188,6 +191,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allowed_clients: { 'glob' => '*', 'type' => 'allow' })
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -196,10 +200,11 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 allowed_clients: [
                   { 'glob' => '*', 'type' => 'deny' },
-                  { 'glob' => 'localhost', 'type' => 'allow' }
-                ]
+                  { 'glob' => 'localhost', 'type' => 'allow' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -207,6 +212,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allowed_clients: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -214,6 +220,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allowed_clients: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -221,6 +228,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(allowed_clients: nil)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -229,16 +237,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 allowed_clients: [
                   { 'rank' => 100, 'glob' => '10.200.1.1', 'type' => 'allow' },
-                  { 'glob' => '*', 'type' => 'deny' }
-                ]
+                  { 'glob' => '*', 'type' => 'deny' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/allowedClients {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "10.200.1.1" }\s*}|
+                %r|/allowedClients {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "10.200.1.1" }\s*}|,
               )
             end
           end
@@ -249,6 +258,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_headers: 'A-Cache-Header')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -256,12 +266,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_headers: ['A-Cache-Header', 'Another-Cache-Header'])
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/headers {\s*"A-Cache-Header"\s*"Another-Cache-Header"\s*}|
+                %r|/headers {\s*"A-Cache-Header"\s*"Another-Cache-Header"\s*}|,
               )
             end
           end
@@ -272,6 +283,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_rules: { 'glob' => '*', 'type' => 'deny' })
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -280,10 +292,11 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 cache_rules: [
                   { 'glob' => '*', 'type' => 'deny' },
-                  { 'glob' => '*.html', 'type' => 'allow' }
-                ]
+                  { 'glob' => '*.html', 'type' => 'allow' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -291,6 +304,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_rules: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -298,6 +312,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_rules: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -305,6 +320,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_rules: nil)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -313,16 +329,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 cache_rules: [
                   { 'rank' => 200, 'glob' => '*.html', 'type' => 'allow' },
-                  { 'glob' => '*', 'type' => 'deny' }
-                ]
+                  { 'glob' => '*', 'type' => 'deny' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|
+                %r|/rules {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }|,
               )
             end
           end
@@ -333,6 +350,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_ttl: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -340,12 +358,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_ttl: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/enableTTL "1"\s*|
+                %r{/enableTTL "1"\s*},
               )
             end
           end
@@ -354,6 +373,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_ttl: 2)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -361,6 +381,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(cache_ttl: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -370,6 +391,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(client_headers: 'A-Client-Header')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -377,12 +399,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(client_headers: ['A-Client-Header', 'Another-Client-Header'])
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/clientheaders {\s*"A-Client-Header"\s*"Another-Client-Header"\s*}|
+                %r|/clientheaders {\s*"A-Client-Header"\s*"Another-Client-Header"\s*}|,
               )
             end
           end
@@ -392,9 +415,10 @@ describe 'dispatcher::farm' do
           context 'should be required' do
             let(:params) do
               {
-                'notdocroot' => '/path/to/docroot'
+                'notdocroot' => '/path/to/docroot',
               }
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -402,6 +426,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(docroot: 'relative/path')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -411,6 +436,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(failover: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -418,12 +444,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(failover: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/failover "1"\s*|
+                %r{/failover "1"\s*},
               )
             end
           end
@@ -432,6 +459,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(failover: 2)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -439,6 +467,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(failover: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -449,10 +478,11 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 filters: [
                   { 'glob' => '*', 'type' => 'deny' },
-                  { 'glob' => '* /content*', 'type' => 'allow' }
-                ]
+                  { 'glob' => '* /content*', 'type' => 'allow' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -460,6 +490,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(filters: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -467,6 +498,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(filters: nil)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -475,16 +507,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 filters: [
                   { 'rank' => 10, 'type' => 'allow', 'glob' => '/content*' },
-                  { 'type' => 'deny', 'glob' => '*' }
-                ]
+                  { 'type' => 'deny', 'glob' => '*' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content\*" }|
+                %r|/filter {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "/content\*" }|,
               )
             end
           end
@@ -493,12 +526,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(filters: [{ 'type' => 'deny', 'glob' => '/content*' }])
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/filter {\s*/0 { /type "deny" /glob "/content\*" }|
+                %r|/filter {\s*/0 { /type "deny" /glob "/content\*" }|,
               )
             end
           end
@@ -515,14 +549,15 @@ describe 'dispatcher::farm' do
                   'path'      => '/different/path/to/content',
                   'selectors' => '\'((sys|doc)view|query|[0-9-]+)\'',
                   'extension' => '\'(css|gif|ico|js|png|swf|jpe?g)\'',
-                  'suffix'    => '\'/suffix/path\''
-                }]
+                  'suffix'    => '\'/suffix/path\'',
+                }],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /0\s{\s*
@@ -536,7 +571,7 @@ describe 'dispatcher::farm' do
                     /extension\s'\(css\|gif\|ico\|js\|png\|swf\|jpe\?g\)'\s*
                     /suffix\s\'/suffix/path\'\s*
                   }
-                |x
+                |x,
               )
             end
 
@@ -545,16 +580,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'   => 'allow',
-                    'method' => 'GET'
-                  }]
+                    'method' => 'GET',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/method\s*"GET"\s*}|,
                 )
               end
             end
@@ -564,16 +600,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'   => 'allow',
-                    'method' => '\'(GET|HEAD)\''
-                  }]
+                    'method' => '\'(GET|HEAD)\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/method\s*\'\(GET\|HEAD\)\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/method\s*\'\(GET\|HEAD\)\'\s*}|,
                 )
               end
             end
@@ -583,16 +620,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type' => 'allow',
-                    'url'  => '/path/to/content'
-                  }]
+                    'url'  => '/path/to/content',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/url\s*"/path/to/content"\s*}|,
                 )
               end
             end
@@ -602,16 +640,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type' => 'allow',
-                    'url'  => '\'/path/to/(content|lib)/?\''
-                  }]
+                    'url'  => '\'/path/to/(content|lib)/?\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/url\s*\'/path/to/\(content\|lib\)/\?\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/url\s*\'/path/to/\(content\|lib\)/\?\'\s*}|,
                 )
               end
             end
@@ -621,16 +660,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'     => 'allow',
-                    'query'    => 'param=*'
-                  }]
+                    'query'    => 'param=*',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/query\s*"param=\*"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/query\s*"param=\*"\s*}|,
                 )
               end
             end
@@ -640,16 +680,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'     => 'allow',
-                    'query'    => '\'param=.*\''
-                  }]
+                    'query'    => '\'param=.*\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/query\s*\'param=\.\*\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/query\s*\'param=\.\*\'\s*}|,
                 )
               end
             end
@@ -659,16 +700,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'     => 'allow',
-                    'protocol' => 'https'
-                  }]
+                    'protocol' => 'https',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/protocol\s"https"\s*}|,
                 )
               end
             end
@@ -678,16 +720,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'     => 'allow',
-                    'protocol' => '\'https?\''
-                  }]
+                    'protocol' => '\'https?\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/protocol\s\'https\?\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/protocol\s\'https\?\'\s*}|,
                 )
               end
             end
@@ -697,16 +740,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type' => 'allow',
-                    'path' => '/path/to/content'
-                  }]
+                    'path' => '/path/to/content',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/path\s*"/path/to/content"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/path\s*"/path/to/content"\s*}|,
                 )
               end
             end
@@ -716,16 +760,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type' => 'allow',
-                    'path' => '\'/path/to/(content|lib)/?\''
-                  }]
+                    'path' => '\'/path/to/(content|lib)/?\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/path\s*\'/path/to/\(content\|lib\)/\?\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/path\s*\'/path/to/\(content\|lib\)/\?\'\s*}|,
                 )
               end
             end
@@ -735,16 +780,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'      => 'allow',
-                    'selectors' => 'thumb'
-                  }]
+                    'selectors' => 'thumb',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/selectors\s"thumb"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/selectors\s"thumb"\s*}|,
                 )
               end
             end
@@ -754,16 +800,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'      => 'allow',
-                    'selectors' => '\'[0-9]+\''
-                  }]
+                    'selectors' => '\'[0-9]+\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/selectors\s\'\[0-9\]\+\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/selectors\s\'\[0-9\]\+\'\s*}|,
                 )
               end
             end
@@ -773,16 +820,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'      => 'allow',
-                    'extension' => 'ico'
-                  }]
+                    'extension' => 'ico',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/extension\s"ico"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/extension\s"ico"\s*}|,
                 )
               end
             end
@@ -792,16 +840,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'      => 'allow',
-                    'extension' => '\'(ico|png)\''
-                  }]
+                    'extension' => '\'(ico|png)\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/extension\s\'\(ico\|png\)\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/extension\s\'\(ico\|png\)\'\s*}|,
                 )
               end
             end
@@ -811,16 +860,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'   => 'allow',
-                    'suffix' => '/suffix/path'
-                  }]
+                    'suffix' => '/suffix/path',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/suffix\s"/suffix/path"\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/suffix\s"/suffix/path"\s*}|,
                 )
               end
             end
@@ -830,16 +880,17 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   filters: [{
                     'type'   => 'allow',
-                    'suffix' => '\'/suffix/path/.*\''
-                  }]
+                    'suffix' => '\'/suffix/path/.*\'',
+                  }],
                 )
               end
+
               it { is_expected.to compile }
               it do
                 is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                  "#{farm_path}/dispatcher.00-#{title}.inc.any",
                 ).with_content(
-                  %r|/0 {\s*/type\s*"allow"\s*/suffix\s\'/suffix/path/\.\*\'\s*}|
+                  %r|/0 {\s*/type\s*"allow"\s*/suffix\s\'/suffix/path/\.\*\'\s*}|,
                 )
               end
             end
@@ -851,6 +902,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(grace_period: 0)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -858,12 +910,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(grace_period: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/gracePeriod "1"\s*|
+                %r{/gracePeriod "1"\s*},
               )
             end
           end
@@ -872,6 +925,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(grace_period: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -881,20 +935,22 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(health_check_url: '/health/check/url.html')
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/health_check { /url "/health/check/url.html" }|
+                %r|/health_check { /url "/health/check/url.html" }|,
               )
             end
           end
 
           context 'should not accept anything else' do
             let(:params) do
-              default_params.merge(health_check_url: ['not', 'a', 'string'])
+              default_params.merge(health_check_url: %w[not a string])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -905,16 +961,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 ignore_parameters: [
                   { 'glob' => '*', 'type' => 'deny' },
-                  { 'glob' => 'param=*', 'type' => 'allow' }
-                ]
+                  { 'glob' => 'param=*', 'type' => 'allow' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
+                %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|,
               )
             end
           end
@@ -923,6 +980,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(ignore_parameters: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -930,6 +988,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(ignore_parameters: nil)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -938,16 +997,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 ignore_parameters: [
                   { 'rank' => 1, 'glob' => 'param=*', 'type' => 'allow' },
-                  { 'glob' => '*', 'type' => 'deny' }
-                ]
+                  { 'glob' => '*', 'type' => 'deny' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|
+                %r|/ignoreUrlParams {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "param=\*" }\s*}|,
               )
             end
           end
@@ -959,16 +1019,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 invalidate: [
                   { 'glob' => '*', 'type' => 'deny' },
-                  { 'glob' => '*.html', 'type' => 'allow' }
-                ]
+                  { 'glob' => '*.html', 'type' => 'allow' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*}|
+                %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*}|,
               )
             end
           end
@@ -977,6 +1038,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(invalidate: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -984,6 +1046,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(invalidate: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -992,28 +1055,30 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 invalidate: [
                   { 'rank' => 1000, 'glob' => '*.html', 'type' => 'allow' },
-                  { 'glob' => '*', 'type' => 'deny' }
-                ]
+                  { 'glob' => '*', 'type' => 'deny' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*|
+                %r|/invalidate {\s*/0 { /type "deny" /glob "\*" }\s*/1 { /type "allow" /glob "\*.html" }\s*|,
               )
             end
           end
         end
 
-       context 'invalidate_handler' do
+        context 'invalidate_handler' do
           context 'should be an absolute path' do
             let(:params) do
               default_params.merge(
-                invalidate_handler: 'not/absolute/path'
+                invalidate_handler: 'not/absolute/path',
               )
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
           # context 'should accept relative path' do
@@ -1041,10 +1106,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(
                 invalidate: [{ 'glob' => '*.html', 'type' => 'allow' }],
-                invalidate_handler: '/path/to/handler'
+                invalidate_handler: '/path/to/handler',
               )
             end
-            it { expect { is_expected.to compile }.to raise_error(/Both.*can not be set./) }
+
+            it { expect { is_expected.to compile }.to raise_error(%r{Both.*can not be set.}) }
           end
         end
 
@@ -1053,6 +1119,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: :undef)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1060,6 +1127,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1067,10 +1135,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.01-#{title}.inc.any"
+                "#{farm_path}/dispatcher.01-#{title}.inc.any",
               )
             end
           end
@@ -1079,10 +1148,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: 99)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.99-#{title}.inc.any"
+                "#{farm_path}/dispatcher.99-#{title}.inc.any",
               )
             end
           end
@@ -1091,6 +1161,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: 100)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1098,6 +1169,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: 101)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1105,6 +1177,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1112,6 +1185,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(priority: '0')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1121,6 +1195,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(propagate_synd_post: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1128,12 +1203,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(propagate_synd_post: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/propagateSyndPost "1"\s*|
+                %r{/propagateSyndPost "1"\s*},
               )
             end
           end
@@ -1142,6 +1218,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(propagate_synd_post: 2)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1149,6 +1226,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(propagate_synd_post: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1159,10 +1237,11 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 renders: [
                   { 'hostname' => 'publish.renderer.com', 'port' => '8080' },
-                  { 'hostname' => 'another.renderer.com', 'port' => '8080' }
-                ]
+                  { 'hostname' => 'another.renderer.com', 'port' => '8080' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1170,6 +1249,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(renders: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1177,6 +1257,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(renders: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1188,14 +1269,15 @@ describe 'dispatcher::farm' do
                   'port'           => 8080,
                   'timeout'        => 600,
                   'receiveTimeout' => 300,
-                  'ipv4'           => 0
-                }]
+                  'ipv4'           => 0,
+                }],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /renders\s{\s*
@@ -1207,7 +1289,7 @@ describe 'dispatcher::farm' do
                       /ipv4\s"0"\s*
                     }\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1218,16 +1300,17 @@ describe 'dispatcher::farm' do
                 renders: [{
                   'hostname' => 'publish.hostname.com',
                   'port'     => 8080,
-                  'timeout'  => 600
-                }]
+                  'timeout'  => 600,
+                }],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|
+                %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|,
               )
             end
           end
@@ -1238,14 +1321,15 @@ describe 'dispatcher::farm' do
                 renders: [{
                   'hostname'       => 'publish.hostname.com',
                   'port'           => 8080,
-                  'receiveTimeout' => 600
-                }]
+                  'receiveTimeout' => 600,
+                }],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /renders\s{\s*
@@ -1255,7 +1339,7 @@ describe 'dispatcher::farm' do
                       /receiveTimeout\s*"600"\s*
                     }\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1266,16 +1350,17 @@ describe 'dispatcher::farm' do
                 renders: [{
                   'hostname' => 'publish.hostname.com',
                   'port'     => 8080,
-                  'ipv4'     => 0
-                }]
+                  'ipv4'     => 0,
+                }],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/ipv4\s*"0"\s*}|
+                %r|/renders {\s*/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/ipv4\s*"0"\s*}|,
               )
             end
           end
@@ -1287,24 +1372,25 @@ describe 'dispatcher::farm' do
                   {
                     'hostname' => 'publish.hostname.com',
                     'port'     => 8080,
-                    'timeout'  => 600
+                    'timeout'  => 600,
                   },
                   {
                     'hostname' => 'another.hostname.com',
                     'port'     => 8888,
-                    'timeout'  => 100
-                  }
-                ]
+                    'timeout'  => 100,
+                  },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|
+                %r|/renderer0 {\s*/hostname\s*"publish.hostname.com"\s*/port\s"8080"\s*/timeout\s*"600"\s*}|,
               ).with_content(
-                %r|/renderer1 {\s*/hostname\s*"another.hostname.com"\s*/port\s"8888"\s*/timeout\s*"100"\s*}|
+                %r|/renderer1 {\s*/hostname\s*"another.hostname.com"\s*/port\s"8888"\s*/timeout\s*"100"\s*}|,
               )
             end
           end
@@ -1315,6 +1401,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retries: 0)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1322,12 +1409,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retries: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/numberOfRetries "1"|
+                %r{/numberOfRetries "1"},
               )
             end
           end
@@ -1336,6 +1424,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retries: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1345,6 +1434,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retry_delay: 0)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1352,12 +1442,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retry_delay: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/retryDelay "1"|
+                %r{/retryDelay "1"},
               )
             end
           end
@@ -1366,6 +1457,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(retry_delay: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1375,6 +1467,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(serve_stale: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1382,12 +1475,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(serve_stale: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/serveStaleOnError "1"\s*|
+                %r{/serveStaleOnError "1"\s*},
               )
             end
           end
@@ -1396,6 +1490,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(serve_stale: 2)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1403,7 +1498,8 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(serve_stale: -1)
             end
-            it {is_expected.to raise_error(Puppet::ParseError) }
+
+            it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
 
@@ -1412,6 +1508,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(session_management: { 'directory' => '/directory/to/cache' })
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1419,16 +1516,17 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(
                 session_management: {
-                  'directory' => '/path/to/cache'
-                }
+                  'directory' => '/path/to/cache',
+                },
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*}|
+                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*}|,
               )
             end
           end
@@ -1438,16 +1536,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 session_management: {
                   'directory' => '/path/to/cache',
-                  'encode'    => 'md5'
-                }
+                  'encode'    => 'md5',
+                },
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/encode\s"md5"\s*}|
+                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/encode\s"md5"\s*}|,
               )
             end
           end
@@ -1457,16 +1556,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 session_management: {
                   'directory' => '/path/to/cache',
-                  'header'    => 'HTTP:authorization'
-                }
+                  'header'    => 'HTTP:authorization',
+                },
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/header\s"HTTP:authorization"\s*}|
+                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/header\s"HTTP:authorization"\s*}|,
               )
             end
           end
@@ -1476,16 +1576,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 session_management: {
                   'directory' => '/path/to/cache',
-                  'timeout'   => 1000
-                }
+                  'timeout'   => 1000,
+                },
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/timeout\s"1000"\s*}|
+                %r|/sessionmanagement {\s*/directory\s*"/path/to/cache"\s*/timeout\s"1000"\s*}|,
               )
             end
           end
@@ -1497,14 +1598,15 @@ describe 'dispatcher::farm' do
                   'directory' => '/path/to/cache',
                   'encode'    => 'md5',
                   'header'    => 'HTTP:authorization',
-                  'timeout'   => 1000
-                }
+                  'timeout'   => 1000,
+                },
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /sessionmanagement\s{\s*
@@ -1513,7 +1615,7 @@ describe 'dispatcher::farm' do
                     /header\s"HTTP:authorization"\s*
                     /timeout\s"1000"\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1522,13 +1624,15 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(session_management: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
           context 'should not accept an array' do
             let(:params) do
-              default_params.merge(session_management: ['array', 'of', 'values'])
+              default_params.merge(session_management: %w[array of values])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1536,36 +1640,40 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(
                 session_management: { 'directory' => '/directory/to/cache' },
-                allow_authorized: 1
+                allow_authorized: 1,
               )
             end
-            it { expect { is_expected.to compile }.to raise_error(/mutually exclusive/i) }
+
+            it { expect { is_expected.to compile }.to raise_error(%r{mutually exclusive}i) }
           end
 
           context 'should require directory key' do
             let(:params) do
               default_params.merge(
-                session_management: { 'not_directory' => 'a value' }
+                session_management: { 'not_directory' => 'a value' },
               )
             end
-            it { expect { is_expected.to compile }.to raise_error(/directory is not specified/i) }
+
+            it { expect { is_expected.to compile }.to raise_error(%r{directory is not specified}i) }
           end
 
           context 'should require directory key to be absolute path' do
             let(:params) do
               default_params.merge(
-                session_management: { 'directory' => 'not/absolute/path' }
+                session_management: { 'directory' => 'not/absolute/path' },
               )
             end
-            it { expect { is_expected.to compile }.to raise_error(/not an absolute path/i) }
+
+            it { expect { is_expected.to compile }.to raise_error(%r{not an absolute path}i) }
           end
 
           context 'should accept directory with absolute path' do
             let(:params) do
               default_params.merge(
-                session_management: { 'directory' => '/an/absolute/path' }
+                session_management: { 'directory' => '/an/absolute/path' },
               )
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1575,10 +1683,11 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'encode' => 'md5'
-                  }
+                    'encode' => 'md5',
+                  },
                 )
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -1587,10 +1696,11 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'encode' => 'hex'
-                  }
+                    'encode' => 'hex',
+                  },
                 )
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -1599,11 +1709,12 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'encode' => 'invalid'
-                  }
+                    'encode' => 'invalid',
+                  },
                 )
               end
-              it { expect { is_expected.to compile }.to raise_error(/not supported for session_management\['encode'\]/) }
+
+              it { expect { is_expected.to compile }.to raise_error(%r{not supported for session_management\['encode'\]}) }
             end
           end
 
@@ -1613,10 +1724,11 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'header' => 'Any Value is OK'
-                  }
+                    'header' => 'Any Value is OK',
+                  },
                 )
               end
+
               it { is_expected.to compile.with_all_deps }
             end
           end
@@ -1627,10 +1739,11 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'timeout' => 500
-                  }
+                    'timeout' => 500,
+                  },
                 )
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -1639,10 +1752,11 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'timeout' => -1
-                  }
+                    'timeout' => -1,
+                  },
                 )
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
 
@@ -1651,11 +1765,12 @@ describe 'dispatcher::farm' do
                 default_params.merge(
                   session_management: {
                     'directory' => '/path',
-                    'timeout' => 'not an integer'
-                  }
+                    'timeout' => 'not an integer',
+                  },
                 )
               end
-              it { expect { is_expected.to compile }.to raise_error(/first argument to be an Integer/) }
+
+              it { expect { is_expected.to compile }.to raise_error(%r{first argument to be an Integer}) }
             end
           end
         end
@@ -1665,22 +1780,24 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(stat_file: '/path/to/statfile')
             end
+
             it { is_expected.to compile.with_all_deps }
-             it do
-                is_expected.to contain_file(
-                  "#{farm_path}/dispatcher.00-#{title}.inc.any"
-                ).with_content(
-                  %r|
-                    /statfile\s"/path/to/statfile"
-                  |x
-                )
-              end
+            it do
+              is_expected.to contain_file(
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
+              ).with_content(
+                %r{
+                  /statfile\s"/path/to/statfile"
+                }x,
+              )
+            end
           end
 
           context 'should be not be a relative path' do
             let(:params) do
               default_params.merge(stat_file: 'relative/path')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1690,6 +1807,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(stat_files_level: 0)
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -1697,12 +1815,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(stat_files_level: 4)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/statfileslevel "4"|
+                %r{/statfileslevel "4"},
               )
             end
           end
@@ -1711,6 +1830,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(stat_files_level: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1721,14 +1841,15 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 statistics: [
                   { 'glob' => '*.html', 'category' => 'html' },
-                  { 'glob' => '*', 'category' => 'others' }
-                ]
+                  { 'glob' => '*', 'category' => 'others' },
+                ],
               )
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /statistics\s{\s*
@@ -1737,7 +1858,7 @@ describe 'dispatcher::farm' do
                       /others\s{\s/glob\s"\*"\s}\s*
                     }\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1746,6 +1867,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(statistics: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1753,6 +1875,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(statistics: ['not a hash', 'another non hash'])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1761,16 +1884,17 @@ describe 'dispatcher::farm' do
               default_params.merge(
                 statistics: [
                   { 'rank' => 2, 'glob' => '*', 'category' => 'others' },
-                  { 'glob' => '*.html', 'category' => 'html' }
-                ]
+                  { 'glob' => '*.html', 'category' => 'html' },
+                ],
               )
             end
+
             it { is_expected.to compile }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/statistics {\s*/categories {\s*/html { /glob "\*.html" }\s*/others { /glob "\*" }\s*}\s*}|
+                %r|/statistics {\s*/categories {\s*/html { /glob "\*.html" }\s*/others { /glob "\*" }\s*}\s*}|,
               )
             end
           end
@@ -1781,10 +1905,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(sticky_connections: ['/content/path'])
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /stickyConnections\s{\s*\s
@@ -1792,7 +1917,7 @@ describe 'dispatcher::farm' do
                       "/content/path"\s*
                     }\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1801,10 +1926,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(sticky_connections: ['/path/to/content', '/another/path/to/content'])
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /stickyConnections\s{\s*\s
@@ -1813,7 +1939,7 @@ describe 'dispatcher::farm' do
                       "/another/path/to/content"\s*
                     }\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1822,6 +1948,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(sticky_connections: [{ 'not' => 'string' }, { 'another' => 'not string' }])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1831,6 +1958,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(unavailable_penalty: 0)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1838,12 +1966,13 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(unavailable_penalty: 1)
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
-                %r|/unavailablePenalty "1"|
+                %r{/unavailablePenalty "1"},
               )
             end
           end
@@ -1852,6 +1981,7 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(unavailable_penalty: -1)
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
         end
@@ -1861,10 +1991,11 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(vanity_urls: { 'file' => '/path/to/cache', 'delay' => 600 })
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /vanity_urls\s{\s*
@@ -1872,7 +2003,7 @@ describe 'dispatcher::farm' do
                     /file\s"/path/to/cache"\s*
                     /delay\s"600"\s*
                   }
-                |x
+                |x,
               )
             end
           end
@@ -1881,13 +2012,15 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(vanity_urls: 'not a hash')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
           context 'should not accept an array' do
             let(:params) do
-              default_params.merge(vanity_urls: ['array', 'of', 'values'])
+              default_params.merge(vanity_urls: %w[array of values])
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
 
@@ -1895,27 +2028,30 @@ describe 'dispatcher::farm' do
             context 'should be require' do
               let(:params) do
                 default_params.merge(
-                  vanity_urls: { 'not_file' => 'a value' }
+                  vanity_urls: { 'not_file' => 'a value' },
                 )
               end
-              it { expect { is_expected.to compile }.to raise_error(/cache file is not specified/i) }
+
+              it { expect { is_expected.to compile }.to raise_error(%r{cache file is not specified}i) }
             end
 
             context 'should be an absolute path' do
               let(:params) do
                 default_params.merge(
-                  vanity_urls: { 'file' => 'not/absolute/path' }
+                  vanity_urls: { 'file' => 'not/absolute/path' },
                 )
               end
-              it { expect { is_expected.to compile }.to raise_error(/not an absolute path/i) }
+
+              it { expect { is_expected.to compile }.to raise_error(%r{not an absolute path}i) }
             end
 
             context 'should accept an absolute path' do
               let(:params) do
                 default_params.merge(
-                  vanity_urls: { 'file' => '/an/absolute/path', 'delay' => 1000 }
+                  vanity_urls: { 'file' => '/an/absolute/path', 'delay' => 1000 },
                 )
               end
+
               it { is_expected.to compile.with_all_deps }
             end
           end
@@ -1925,6 +2061,7 @@ describe 'dispatcher::farm' do
               let(:params) do
                 default_params.merge(vanity_urls: { 'file' => '/path', 'delay' => 500 })
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -1932,7 +2069,8 @@ describe 'dispatcher::farm' do
               let(:params) do
                 default_params.merge(vanity_urls: { 'file' => '/path', 'delay' => -1 })
               end
-              it { expect { is_expected.to compile }.to raise_error(/greater or equal/) }
+
+              it { expect { is_expected.to compile }.to raise_error(%r{greater or equal}) }
             end
           end
         end
@@ -1942,14 +2080,15 @@ describe 'dispatcher::farm' do
             let(:params) do
               default_params.merge(virtualhosts: ['www.domainname1.com', 'www.domainname2.com'])
             end
+
             it { is_expected.to compile.with_all_deps }
             it do
               is_expected.to contain_file(
-                "#{farm_path}/dispatcher.00-#{title}.inc.any"
+                "#{farm_path}/dispatcher.00-#{title}.inc.any",
               ).with_content(
                 %r|
                   /virtualhosts\s{\s*"www.domainname1.com"\s*"www.domainname2.com"\s*}
-                |x
+                |x,
               )
             end
           end

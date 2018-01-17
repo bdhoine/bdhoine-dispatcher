@@ -39,8 +39,8 @@
 # @param vanity_urls Sets the /vanity_urls section.
 # @param virtualhosts Sets the /virtualhosts section.
 define dispatcher::farm(
-  Enum['present', 'absent'] $ensure = lookup('dispatcher::farm::ensure'),
   Stdlib::Absolutepath $docroot,
+  Enum['present', 'absent'] $ensure = lookup('dispatcher::farm::ensure'),
   Optional[Integer[0, 1]] $allow_authorized = lookup('dispatcher::farm::allow_authorized'),
   Array[Hash] $allowed_clients = lookup('dispatcher::farm::allowed_clients'),
   Optional[Array[String]] $cache_headers = lookup('dispatcher::farm::cache_headers'),

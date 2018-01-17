@@ -3,7 +3,6 @@ require 'spec_helper'
 describe 'dispatcher' do
   on_supported_os.each do |os, os_facts|
     context "on #{os} #" do
-
       let(:pre_condition) do
         'class { "apache" :
           default_vhost    => false,
@@ -11,9 +10,9 @@ describe 'dispatcher' do
         }'
       end
 
-      let (:default_params) do
+      let(:default_params) do
         {
-          module_file: '/tmp/dispatcher-apache.so'
+          module_file: '/tmp/dispatcher-apache.so',
         }
       end
 
@@ -25,11 +24,11 @@ describe 'dispatcher' do
       when 'RedHat'
         log_path = '/var/log/httpd'
         mod_path = '/etc/httpd/modules'
-        if os_facts[:os]['release']['major'].to_i >= 7
-          farm_path = '/etc/httpd/conf.modules.d'
-        else
-          farm_path = '/etc/httpd/conf.d'
-        end
+        farm_path = if os_facts[:os]['release']['major'].to_i >= 7
+                      '/etc/httpd/conf.modules.d'
+                    else
+                      '/etc/httpd/conf.d'
+                    end
       when 'Debian'
         log_path = '/var/log/apache2'
         mod_path = '/usr/lib/apache2/modules'
@@ -51,7 +50,7 @@ describe 'dispatcher' do
             'no_server_header'  => 'off',
             'pass_error'        => '0',
             'use_processed_url' => 'off',
-            'user'              => 'root'
+            'user'              => 'root',
           )
         end
 
@@ -62,7 +61,7 @@ describe 'dispatcher' do
             'group'   => 'root',
             'owner'   => 'root',
             'replace' => 'true',
-            'source'  => '/tmp/dispatcher-apache.so'
+            'source'  => '/tmp/dispatcher-apache.so',
           )
         end
 
@@ -73,7 +72,7 @@ describe 'dispatcher' do
             'group'   => 'root',
             'owner'   => 'root',
             'replace' => 'true',
-            'target'  => "#{mod_path}/dispatcher-apache.so"
+            'target'  => "#{mod_path}/dispatcher-apache.so",
           )
         end
 
@@ -83,72 +82,72 @@ describe 'dispatcher' do
             'path'    => "#{farm_path}/dispatcher.conf",
             'group'   => 'root',
             'owner'   => 'root',
-            'replace' => 'true'
+            'replace' => 'true',
           ).with_content(
-            %r|.*DispatcherConfig\s*#{farm_path}/dispatcher.farms.any|
+            %r{.*DispatcherConfig\s*#{farm_path}/dispatcher.farms.any},
           ).with_content(
-            %r|.*DispatcherLog\s*#{log_path}/dispatcher.log|
+            %r{.*DispatcherLog\s*#{log_path}/dispatcher.log},
           ).with_content(
-            /.*DispatcherLogLevel\s*warn/
+            %r{.*DispatcherLogLevel\s*warn},
           ).with_content(
-            /.*DispatcherDeclineRoot\s*off/
+            %r{.*DispatcherDeclineRoot\s*off},
           ).with_content(
-            /.*DispatcherUseProcessedURL\s*off/
+            %r{.*DispatcherUseProcessedURL\s*off},
           ).with_content(
-            /.*DispatcherPassError\s*0/
+            %r{.*DispatcherPassError\s*0},
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/dispatcher-apache.so"
+            "#{mod_path}/dispatcher-apache.so",
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/mod_dispatcher.so"
+            "#{mod_path}/mod_dispatcher.so",
           ).that_requires(
-            "File[#{mod_path}/dispatcher-apache.so]"
+            "File[#{mod_path}/dispatcher-apache.so]",
           )
         end
 
         it do
           is_expected.to contain_apache__mod(
-            'dispatcher'
+            'dispatcher',
           ).that_requires(
-            "File[#{mod_path}/mod_dispatcher.so]"
+            "File[#{mod_path}/mod_dispatcher.so]",
           )
         end
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.farms.any"
+            "#{farm_path}/dispatcher.farms.any",
           ).that_requires(
-            'Apache::Mod[dispatcher]'
-          )
-        end
-
-        it do
-          is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
-          ).that_requires(
-            "File[#{farm_path}/dispatcher.farms.any]"
+            'Apache::Mod[dispatcher]',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
+            "#{farm_path}/dispatcher.conf",
+          ).that_requires(
+            "File[#{farm_path}/dispatcher.farms.any]",
+          )
+        end
+
+        it do
+          is_expected.to contain_file(
+            "#{farm_path}/dispatcher.conf",
           ).that_notifies(
-            'Service[httpd]'
+            'Service[httpd]',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.farms.any"
+            "#{farm_path}/dispatcher.farms.any",
           ).that_notifies(
-            'Service[httpd]'
+            'Service[httpd]',
           )
         end
       end
@@ -159,6 +158,7 @@ describe 'dispatcher' do
             let(:params) do
               default_params.merge(ensure: 'present')
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -166,6 +166,7 @@ describe 'dispatcher' do
             let(:params) do
               default_params.merge(ensure: 'absent')
             end
+
             it { is_expected.to compile.with_all_deps }
           end
 
@@ -173,9 +174,9 @@ describe 'dispatcher' do
             let(:params) do
               default_params.merge(ensure: 'invalid')
             end
+
             it { is_expected.to raise_error(Puppet::ParseError) }
           end
-
         end
 
         context 'decline_root' do
@@ -184,6 +185,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 0)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -191,6 +193,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 1)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -198,6 +201,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 2)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
 
@@ -205,6 +209,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: -1)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -214,6 +219,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 'on')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -221,6 +227,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 'off')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -228,6 +235,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(decline_root: 'invalid')
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -239,30 +247,35 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(log_level: 0)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept 1' do
               let(:params) do
                 default_params.merge(log_level: 1)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept 2' do
               let(:params) do
                 default_params.merge(log_level: 2)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept 3' do
               let(:params) do
                 default_params.merge(log_level: 3)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept 4' do
               let(:params) do
                 default_params.merge(log_level: 4)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -270,12 +283,14 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(log_level: 5)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
             context 'should not accept any negative value' do
               let(:params) do
                 default_params.merge(log_level: -1)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -285,30 +300,35 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(log_level: 'error')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept warn' do
               let(:params) do
                 default_params.merge(log_level: 'warn')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept info' do
               let(:params) do
                 default_params.merge(log_level: 'info')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept debug' do
               let(:params) do
                 default_params.merge(log_level: 'debug')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept trace' do
               let(:params) do
                 default_params.merge(log_level: 'trace')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -316,6 +336,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(log_level: 'invalid')
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -327,12 +348,14 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(use_processed_url: 0)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept 1' do
               let(:params) do
                 default_params.merge(use_processed_url: 1)
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -340,12 +363,14 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(use_processed_url: 2)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
             context 'should not accept any negative value' do
               let(:params) do
                 default_params.merge(use_processed_url: -1)
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -355,12 +380,14 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(use_processed_url: 'on')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
             context 'should accept off' do
               let(:params) do
                 default_params.merge(use_processed_url: 'off')
               end
+
               it { is_expected.to compile.with_all_deps }
             end
 
@@ -368,6 +395,7 @@ describe 'dispatcher' do
               let(:params) do
                 default_params.merge(use_processed_url: 'invalid')
               end
+
               it { is_expected.to raise_error(Puppet::ParseError) }
             end
           end
@@ -398,7 +426,7 @@ describe 'dispatcher' do
             'module_file'       => '/tmp/dispatcher-apache.so',
             'pass_error'        => '0',
             'use_processed_url' => 'off',
-            'user'              => 'root'
+            'user'              => 'root',
           )
         end
 
@@ -409,7 +437,7 @@ describe 'dispatcher' do
             'group'   => 'root',
             'owner'   => 'root',
             'replace' => 'true',
-            'source'  => '/tmp/dispatcher-apache.so'
+            'source'  => '/tmp/dispatcher-apache.so',
           )
         end
 
@@ -420,7 +448,7 @@ describe 'dispatcher' do
             'group'   => 'root',
             'owner'   => 'root',
             'replace' => 'true',
-            'target'  => "#{mod_path}/dispatcher-apache.so"
+            'target'  => "#{mod_path}/dispatcher-apache.so",
           )
         end
 
@@ -430,56 +458,56 @@ describe 'dispatcher' do
             'path'    => "#{farm_path}/dispatcher.conf",
             'group'   => 'root',
             'owner'   => 'root',
-            'replace' => 'true'
+            'replace' => 'true',
           ).with_content(
-            %r|.*DispatcherConfig\s*#{farm_path}/dispatcher.farms.any|
+            %r{.*DispatcherConfig\s*#{farm_path}/dispatcher.farms.any},
           ).with_content(
-            %r|.*DispatcherLog\s*#{log_path}/dispatcher.log|
+            %r{.*DispatcherLog\s*#{log_path}/dispatcher.log},
           ).with_content(
-            /.*DispatcherLogLevel\s*warn/
+            %r{.*DispatcherLogLevel\s*warn},
           ).with_content(
-            /.*DispatcherDeclineRoot\s*off/
+            %r{.*DispatcherDeclineRoot\s*off},
           ).with_content(
-            /.*DispatcherUseProcessedURL\s*off/
+            %r{.*DispatcherUseProcessedURL\s*off},
           ).with_content(
-            /.*DispatcherPassError\s*0/
+            %r{.*DispatcherPassError\s*0},
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/dispatcher-apache.so"
+            "#{mod_path}/dispatcher-apache.so",
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/mod_dispatcher.so"
+            "#{mod_path}/mod_dispatcher.so",
           ).that_requires(
-            "File[#{mod_path}/dispatcher-apache.so]"
+            "File[#{mod_path}/dispatcher-apache.so]",
           )
         end
 
         it do
           is_expected.to contain_apache__mod(
-            'dispatcher'
+            'dispatcher',
           ).that_requires(
-            "File[#{mod_path}/mod_dispatcher.so]"
+            "File[#{mod_path}/mod_dispatcher.so]",
           )
         end
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.farms.any"
+            "#{farm_path}/dispatcher.farms.any",
           ).that_requires(
-            'Apache::Mod[dispatcher]'
+            'Apache::Mod[dispatcher]',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
+            "#{farm_path}/dispatcher.conf",
           ).that_requires(
-            "File[#{farm_path}/dispatcher.farms.any]"
+            "File[#{farm_path}/dispatcher.farms.any]",
           )
         end
       end
@@ -500,74 +528,74 @@ describe 'dispatcher' do
             'module_file'       => '/tmp/dispatcher-apache.so',
             'pass_error'        => '0',
             'use_processed_url' => 'off',
-            'user'              => 'root'
+            'user'              => 'root',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/dispatcher-apache.so"
+            "#{mod_path}/dispatcher-apache.so",
           ).with(
-            'ensure' => 'absent'
+            'ensure' => 'absent',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/mod_dispatcher.so"
+            "#{mod_path}/mod_dispatcher.so",
           ).with(
-            'ensure' => 'absent'
+            'ensure' => 'absent',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
+            "#{farm_path}/dispatcher.conf",
           ).with(
-            'ensure' => 'absent'
+            'ensure' => 'absent',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
+            "#{farm_path}/dispatcher.conf",
           )
         end
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.farms.any"
+            "#{farm_path}/dispatcher.farms.any",
           ).that_requires(
-            "File[#{farm_path}/dispatcher.conf]"
+            "File[#{farm_path}/dispatcher.conf]",
           )
         end
         it do
           is_expected.to contain_file(
-            "#{mod_path}/dispatcher-apache.so"
+            "#{mod_path}/dispatcher-apache.so",
           ).that_requires(
-            "File[#{farm_path}/dispatcher.farms.any]"
+            "File[#{farm_path}/dispatcher.farms.any]",
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/mod_dispatcher.so"
+            "#{mod_path}/mod_dispatcher.so",
           ).that_requires(
-            "File[#{farm_path}/dispatcher.conf]"
+            "File[#{farm_path}/dispatcher.conf]",
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.farms.any"
+            "#{farm_path}/dispatcher.farms.any",
           ).that_notifies(
-            'Service[httpd]'
+            'Service[httpd]',
           )
         end
         it do
           is_expected.to contain_file(
-            "#{farm_path}/dispatcher.conf"
+            "#{farm_path}/dispatcher.conf",
           ).that_notifies(
-            'Service[httpd]'
+            'Service[httpd]',
           )
         end
       end
@@ -575,9 +603,7 @@ describe 'dispatcher' do
       context 'selinux enabled' do
         let(:facts) do
           os_facts.merge(
-            {
-              selinux: true
-            }
+            selinux: true,
           )
         end
 
@@ -585,24 +611,24 @@ describe 'dispatcher' do
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/dispatcher-apache.so"
+            "#{mod_path}/dispatcher-apache.so",
           ).with(
-            'seltype' => 'httpd_modules_t'
+            'seltype' => 'httpd_modules_t',
           )
         end
 
         it do
           is_expected.to contain_file(
-            "#{mod_path}/mod_dispatcher.so"
+            "#{mod_path}/mod_dispatcher.so",
           ).with(
-            'seltype' => 'httpd_modules_t'
+            'seltype' => 'httpd_modules_t',
           )
         end
 
         it do
           is_expected.to contain_selboolean('httpd_can_network_connect').with(
             'value'      => 'on',
-            'persistent' => true
+            'persistent' => true,
           )
         end
       end
