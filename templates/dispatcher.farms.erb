@@ -1,0 +1,11 @@
+#*************************************#
+# Managed by Puppet Dispatcher Module #
+#*************************************#
+
+<%- if @dispatcher_name -%>
+/name "<%= @dispatcher_name -%>"
+<%- end -%>
+
+/farms {
+  $include "dispatcher.*-*.inc.any"
+}

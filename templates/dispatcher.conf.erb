@@ -1,0 +1,13 @@
+#*************************************#
+# Managed by Puppet Dispatcher Module #
+#*************************************#
+
+<IfModule dispatcher_module>
+  DispatcherConfig           <%= @farm_path %>/<%= @config_file %>
+  DispatcherLog              <%= @log_file %>
+  DispatcherLogLevel         <%= @log_level %>
+  DispatcherNoServerHeader   <%= @no_server_header %>
+  DispatcherDeclineRoot      <%= @decline_root %>
+  DispatcherUseProcessedURL  <%= @use_processed_url %>
+  DispatcherPassError        <%= @pass_error %>
+</IfModule>
